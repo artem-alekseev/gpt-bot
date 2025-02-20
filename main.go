@@ -21,9 +21,8 @@ var (
 func main() {
 	telegramToken := os.Getenv("TELEGRAM_TOKEN")
 	openaiToken := os.Getenv("OPENAI_API_KEY")
-	botUsername := os.Getenv("BOT_USERNAME")
 
-	if telegramToken == "" || openaiToken == "" || botUsername == "" {
+	if telegramToken == "" || openaiToken == "" {
 		log.Fatal("Необходимо задать TELEGRAM_TOKEN, OPENAI_API_KEY и BOT_USERNAME в переменных окружения")
 	}
 
@@ -48,32 +47,28 @@ func main() {
 		text := update.Message.Text
 		username := update.Message.From.UserName
 
-		if text == "/clear" {
+		if text == "/cl" {
 			clearHistory(chatID, bot, update.Message.Chat.ID)
 			continue
 		}
 
-		if strings.HasPrefix(text, "/setcontext ") {
+		if strings.HasPrefix(text, "/ctx ") {
 			setContext(chatID, bot, text[12:])
 			continue
 		}
 
-		if strings.HasPrefix(text, "/settemp ") {
+		if strings.HasPrefix(text, "/temp ") {
 			setTemperature(chatID, bot, text[9:])
 			continue
 		}
 
-		if strings.HasPrefix(text, "/setmaxtokens ") {
+		if strings.HasPrefix(text, "/tokens ") {
 			setMaxTokens(chatID, bot, text[13:])
 			continue
 		}
 
-		if strings.Contains(strings.ToLower(text), "@"+strings.ToLower(botUsername)) {
-			reply := processMention(chatID, text, openaiToken)
-			bot.Send(tele.NewMessage(chatID, fmt.Sprintf("@%s, %s", username, reply)))
-		} else {
-			storeMessage(chatID, fmt.Sprintf("%s: %s", username, text))
-		}
+		reply := processMention(chatID, text, openaiToken)
+		bot.Send(tele.NewMessage(chatID, fmt.Sprintf("@%s, %s", username, reply)))
 	}
 }
 
