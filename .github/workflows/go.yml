@@ -24,4 +24,10 @@ jobs:
       run: go mod tidy
 
     - name: Build
-      run: go build -v ./...
+      run: go build -o gpt-bot
+
+    - name: Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: gpt-bot
+        path: gpt-bot
